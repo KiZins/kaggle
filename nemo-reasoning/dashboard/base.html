@@ -494,6 +494,60 @@ function buildGrid() {
         `${totalSolved} solved / ${totalPartial} partial / ${allRows.length} total`;
 }
 
+
+function navigateCategory(delta) {
+    if (!selectedProblemId) return;
+
+    const current = rowById.get(selectedProblemId);
+    if (!current) return;
+
+    const categoryIndex = CATEGORIES.findIndex(
+        c => c.key === current.category
+    );
+
+    const categoryRows = allRows.filter(
+        r => r.category === current.category
+    );
+
+    const idx = categoryRows.findIndex(
+        r => r.id === selectedProblemId
+    );
+
+    let nextIdx = idx + delta;
+
+    // In category navigation
+    if (nextIdx >= 0 && nextIdx < categoryRows.length) {
+        selectProblem(categoryRows[nextIdx].id);
+        return;
+    }
+
+    // Crossing category boundary
+    const nextCategoryIndex = categoryIndex + delta;
+
+    if (
+        nextCategoryIndex < 0 ||
+        nextCategoryIndex >= CATEGORIES.length
+    ) {
+        return;
+    }
+
+    const nextCategoryKey = CATEGORIES[nextCategoryIndex].key;
+
+    const nextCategoryRows = allRows.filter(
+        r => r.category === nextCategoryKey
+    );
+
+    if (nextCategoryRows.length === 0) return;
+
+
+    const target =
+        delta > 0
+            ? nextCategoryRows[0]
+            : nextCategoryRows[nextCategoryRows.length - 1];
+
+    selectProblem(target.id);
+}
+
 function selectProblem(problemId) {
     selectedProblemId = problemId;
     const url = new URL(location.href);
@@ -742,8 +796,11 @@ async function renderDetail() {
     }
 
     // Bind navigation
-    if (prevRow) document.getElementById('detailPrev').addEventListener('click', () => selectProblem(prevRow.id));
-    if (nextRow) document.getElementById('detailNext').addEventListener('click', () => selectProblem(nextRow.id));
+    document.getElementById('detailPrev')
+    .addEventListener('click', () => navigateCategory(-1));
+
+    document.getElementById('detailNext')
+        .addEventListener('click', () => navigateCategory(1));
     document.getElementById('detailClose').addEventListener('click', clearSelection);
 
     detailEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -754,8 +811,15 @@ document.addEventListener('keydown', (e) => {
     if (!selectedProblemId) return;
     if (e.key === 'Escape') { clearSelection(); return; }
     const allIdx = allRows.indexOf(rowById.get(selectedProblemId));
-    if (e.key === 'ArrowLeft' && allIdx > 0) { selectProblem(allRows[allIdx - 1].id); return; }
-    if (e.key === 'ArrowRight' && allIdx < allRows.length - 1) { selectProblem(allRows[allIdx + 1].id); return; }
+    if (e.key === 'ArrowLeft') {
+        navigateCategory(-1);
+        return;
+    }
+
+    if (e.key === 'ArrowRight') {
+        navigateCategory(1);
+        return;
+    }
 });
 
 // Handle browser back/forward

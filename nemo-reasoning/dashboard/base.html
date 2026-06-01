@@ -257,6 +257,16 @@
             background: rgba(0,0,0,0.05);
         }
         .tok.prompt-tok { color: #999; }
+        .annotation-layout {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .annotation-column {
+            flex: 1;
+            min-width: 0;
+        }
     </style>
 </head>
 <body>
@@ -739,6 +749,36 @@ async function renderDetail() {
 
         // We'll load tokens and render after setting innerHTML
         html += `<div id="genTokenSection" data-id="${esc(selectedProblemId)}" data-run="${esc(runFile)}"></div>`;
+        html += `
+            <div class="parsed-section">
+                <h3>Training Data: Chain of Thought
+                    <span id="cotTokenCount" style="color:#666;font-weight:normal;"> 0 tokens</span>
+                </h3>
+
+                <textarea
+                    id="cotEditor"
+                    style="
+                        width:100%;
+                        min-height:300px;
+                        padding:12px;
+                        font-family:monospace;
+                        font-size:14px;
+                        line-height:1.6;
+                        resize:vertical;
+                    "
+                    placeholder="Write reasoning trace..."
+                ></textarea>
+
+                <div style="margin-top:12px;display:flex;gap:8px;">
+                    <button id="saveCotBtn" style="background:#4a5568;color:#fff;border:none;padding:4px 10px;cursor:pointer;border-radius:4px">Save CoT</button>
+                    <button id="reloadCotBtn" style="background:#4a5568;color:#fff;border:none;padding:4px 10px;cursor:pointer;border-radius:4px">Reload</button>
+                </div>
+
+                <div id="cotStatus"
+                    style="margin-top:8px;font-size:13px;color:#666;">
+                </div>
+            </div>
+            `;
     }
 
     detailEl.classList.add('visible');

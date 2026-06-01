@@ -749,23 +749,16 @@ async function renderDetail() {
 
         // We'll load tokens and render after setting innerHTML
         html += `<div id="genTokenSection" data-id="${esc(selectedProblemId)}" data-run="${esc(runFile)}"></div>`;
-        html += `
-            <div class="parsed-section">
-                <h3>Training Data: Chain of Thought
+    }
+    // Answer + submission + generation extracted answer
+    if (parsed) {
+        html += `<div class="parsed-section">
+                <h3> Training Data: Chain of Thought 
                     <span id="cotTokenCount" style="color:#666;font-weight:normal;"> 0 tokens</span>
                 </h3>
 
-                <textarea
-                    id="cotEditor"
-                    style="
-                        width:100%;
-                        min-height:300px;
-                        padding:12px;
-                        font-family:monospace;
-                        font-size:14px;
-                        line-height:1.6;
-                        resize:vertical;
-                    "
+                <textarea id="cotEditor" 
+                    style="width:100%; min-height:300px; padding:12px; font-family:monospace; font-size:14px; line-height:1.6; resize:vertical;"
                     placeholder="Write reasoning trace..."
                 ></textarea>
 
@@ -780,6 +773,7 @@ async function renderDetail() {
             </div>
             `;
     }
+    
 
     detailEl.classList.add('visible');
     detailEl.innerHTML = html;
